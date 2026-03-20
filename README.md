@@ -91,6 +91,3 @@ The client will typically run on `http://localhost:5173` and the server on `http
 └── README.md         # Project documentation
 ```
 
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
