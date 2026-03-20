@@ -8,12 +8,14 @@ import {
   getSearchResults,
   resetSearchResults,
 } from "@/store/shop/search-slice";
+import useDebounce from "@/hooks/useDebounce";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 
 function SearchProducts() {
   const [keyword, setKeyword] = useState("");
+  const debouncedKeyword = useDebounce(keyword, 500);
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const dispatch = useDispatch();
@@ -24,17 +26,16 @@ function SearchProducts() {
 
   const { cartItems } = useSelector((state) => state.shopCart);
   const { toast } = useToast();
+
   useEffect(() => {
-    if (keyword && keyword.trim() !== "" && keyword.trim().length > 3) {
-      setTimeout(() => {
-        setSearchParams(new URLSearchParams(`?keyword=${keyword}`));
-        dispatch(getSearchResults(keyword));
-      }, 1000);
+    if (debouncedKeyword && debouncedKeyword.trim() !== "" && debouncedKeyword.trim().length > 3) {
+      setSearchParams(new URLSearchParams(`?keyword=${debouncedKeyword}`));
+      dispatch(getSearchResults(debouncedKeyword));
     } else {
-      setSearchParams(new URLSearchParams(`?keyword=${keyword}`));
+      setSearchParams(new URLSearchParams(`?keyword=${debouncedKeyword}`));
       dispatch(resetSearchResults());
     }
-  }, [keyword]);
+  }, [debouncedKeyword, dispatch, setSearchParams]);
 
   function handleAddtoCart(getCurrentProductId, getTotalStock) {
     console.log(cartItems);

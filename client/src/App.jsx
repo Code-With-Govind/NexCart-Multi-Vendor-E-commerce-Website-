@@ -7,6 +7,7 @@ import AdminDashboard from "./pages/admin-view/dashboard";
 import AdminProducts from "./pages/admin-view/products";
 import AdminOrders from "./pages/admin-view/orders";
 import AdminFeatures from "./pages/admin-view/features";
+import AdminSellers from "./pages/admin-view/sellers";
 import ShoppingLayout from "./components/shopping-view/layout";
 import NotFound from "./pages/not-found";
 import ShoppingHome from "./pages/shopping-view/home";
@@ -21,7 +22,16 @@ import { checkAuth } from "./store/auth-slice";
 import { Skeleton } from "@/components/ui/skeleton";
 import PaypalReturnPage from "./pages/shopping-view/paypal-return";
 import PaymentSuccessPage from "./pages/shopping-view/payment-success";
+import PaypalCancelPage from "./pages/shopping-view/paypal-cancel";
 import SearchProducts from "./pages/shopping-view/search";
+
+// Seller pages
+import SellerRegister from "./pages/seller-view/register";
+import SellerLayout from "./components/seller-view/layout";
+import SellerDashboard from "./pages/seller-view/dashboard";
+import SellerProducts from "./pages/seller-view/products";
+import SellerOrders from "./pages/seller-view/orders";
+import SellerProfile from "./pages/seller-view/profile";
 
 function App() {
   const { user, isAuthenticated, isLoading } = useSelector(
@@ -35,10 +45,8 @@ function App() {
 
   if (isLoading) return <Skeleton className="w-[800] bg-black h-[600px]" />;
 
-  console.log(isLoading, user);
-
   return (
-    <div className="flex flex-col overflow-hidden bg-white">
+    <div className="flex flex-col bg-white min-h-screen">
       <Routes>
         <Route
           path="/"
@@ -49,6 +57,8 @@ function App() {
             ></CheckAuth>
           }
         />
+
+        {/* Auth */}
         <Route
           path="/auth"
           element={
@@ -60,6 +70,11 @@ function App() {
           <Route path="login" element={<AuthLogin />} />
           <Route path="register" element={<AuthRegister />} />
         </Route>
+
+        {/* Seller registration (public) */}
+        <Route path="/auth/register-seller" element={<SellerRegister />} />
+
+        {/* Admin */}
         <Route
           path="/admin"
           element={
@@ -72,7 +87,25 @@ function App() {
           <Route path="products" element={<AdminProducts />} />
           <Route path="orders" element={<AdminOrders />} />
           <Route path="features" element={<AdminFeatures />} />
+          <Route path="sellers" element={<AdminSellers />} />
         </Route>
+
+        {/* Seller Dashboard */}
+        <Route
+          path="/seller"
+          element={
+            <CheckAuth isAuthenticated={isAuthenticated} user={user}>
+              <SellerLayout />
+            </CheckAuth>
+          }
+        >
+          <Route path="dashboard" element={<SellerDashboard />} />
+          <Route path="products" element={<SellerProducts />} />
+          <Route path="orders" element={<SellerOrders />} />
+          <Route path="profile" element={<SellerProfile />} />
+        </Route>
+
+        {/* Shop */}
         <Route
           path="/shop"
           element={
@@ -87,8 +120,10 @@ function App() {
           <Route path="account" element={<ShoppingAccount />} />
           <Route path="paypal-return" element={<PaypalReturnPage />} />
           <Route path="payment-success" element={<PaymentSuccessPage />} />
+          <Route path="paypal-cancel" element={<PaypalCancelPage />} />
           <Route path="search" element={<SearchProducts />} />
         </Route>
+
         <Route path="/unauth-page" element={<UnauthPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

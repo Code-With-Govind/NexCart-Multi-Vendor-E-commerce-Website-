@@ -11,8 +11,15 @@ const ProductSchema = new mongoose.Schema(
     salePrice: Number,
     totalStock: Number,
     averageReview: Number,
+    sellerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Seller",
+      default: null,
+    },
   },
   { timestamps: true }
 );
+
+ProductSchema.index({ title: "text", description: "text", category: "text", brand: "text" });
 
 module.exports = mongoose.model("Product", ProductSchema);

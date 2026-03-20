@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
@@ -5,6 +6,8 @@ const cors = require("cors");
 const authRouter = require("./routes/auth/auth-routes");
 const adminProductsRouter = require("./routes/admin/products-routes");
 const adminOrderRouter = require("./routes/admin/order-routes");
+const adminSellerRouter = require("./routes/admin/seller-routes");
+const adminNotificationRouter = require("./routes/admin/notification-routes");
 
 const shopProductsRouter = require("./routes/shop/products-routes");
 const shopCartRouter = require("./routes/shop/cart-routes");
@@ -14,12 +17,16 @@ const shopSearchRouter = require("./routes/shop/search-routes");
 const shopReviewRouter = require("./routes/shop/review-routes");
 
 const commonFeatureRouter = require("./routes/common/feature-routes");
+const sellerRouter = require("./routes/seller/seller-routes");
+const errorMiddleware = require("./middleware/errorMiddleware");
 
 //create a database connection -> u can also
 //create a separate file for this and then import/use that file here
 
 mongoose
-  .connect("db_url")
+  .connect(
+    process.env.MONGODB_URI || "mongodb://localhost:27017/mern-ecommerce",
+  )
   .then(() => console.log("MongoDB connected"))
   .catch((error) => console.log(error));
 
@@ -38,14 +45,18 @@ app.use(
       "Pragma",
     ],
     credentials: true,
-  })
+  }),
 );
 
 app.use(cookieParser());
-app.use(express.json());
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use("/api/auth", authRouter);
 app.use("/api/admin/products", adminProductsRouter);
 app.use("/api/admin/orders", adminOrderRouter);
+app.use("/api/admin/sellers", adminSellerRouter);
+app.use("/api/admin/notifications", adminNotificationRouter);
+app.use("/api/seller", sellerRouter);
 
 app.use("/api/shop/products", shopProductsRouter);
 app.use("/api/shop/cart", shopCartRouter);
@@ -55,5 +66,8 @@ app.use("/api/shop/search", shopSearchRouter);
 app.use("/api/shop/review", shopReviewRouter);
 
 app.use("/api/common/feature", commonFeatureRouter);
+
+// Global Error Handler
+app.use(errorMiddleware);
 
 app.listen(PORT, () => console.log(`Server is now running on port ${PORT}`));

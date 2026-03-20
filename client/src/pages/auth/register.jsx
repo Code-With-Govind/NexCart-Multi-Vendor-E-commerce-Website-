@@ -35,21 +35,20 @@ function AuthRegister() {
     });
   }
 
-  console.log(formData);
 
   return (
-    <div className="mx-auto w-full max-w-md space-y-6">
+    <div className="w-full space-y-8">
       <div className="text-center">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">
-          Create new account
+        <h1 className="text-3xl font-extrabold tracking-tight text-foreground">
+          Create Account
         </h1>
-        <p className="mt-2">
-          Already have an account
+        <p className="mt-2 text-sm text-muted-foreground font-medium">
+          Already have an account?
           <Link
-            className="font-medium ml-2 text-primary hover:underline"
+            className="font-bold ml-1.5 text-primary hover:text-primary/80 hover:underline transition-all"
             to="/auth/login"
           >
-            Login
+            Login here
           </Link>
         </p>
       </div>
@@ -60,6 +59,12 @@ function AuthRegister() {
         setFormData={setFormData}
         onSubmit={onSubmit}
       />
+      <p className="text-center text-sm text-muted-foreground mt-4 font-medium">
+        Want to sell?
+        <Link className="font-bold ml-1.5 text-primary hover:text-primary/80 hover:underline transition-all" to="/auth/register-seller">
+          Register as a Seller
+        </Link>
+      </p>
     </div>
   );
 }

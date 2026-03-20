@@ -2,7 +2,13 @@ const Product = require("../../models/Product");
 
 const getFilteredProducts = async (req, res) => {
   try {
-    const { category = [], brand = [], sortBy = "price-lowtohigh" } = req.query;
+    const {
+      category = [],
+      brand = [],
+      sortBy = "price-lowtohigh",
+      page = 1,
+      limit = 10
+    } = req.query;
 
     let filters = {};
 
@@ -40,14 +46,36 @@ const getFilteredProducts = async (req, res) => {
         break;
     }
 
-    const products = await Product.find(filters).sort(sort);
+    // Step 1: Find all approved sellers
+    const Seller = require("../../models/Seller");
+    const approvedSellers = await Seller.find({ status: "approved" }).select('_id shopName');
+
+    // Step 2: Get all eligible seller IDs
+    const eligibleSellerIds = approvedSellers.map(seller => seller._id);
+
+    // Step 3: Add the eligible sellers to the product filter
+    // Products are visible if they have no sellerId (Admin added) OR if they belong to an eligible seller
+    filters.$or = [
+      { sellerId: null },
+      { sellerId: { $exists: false } },
+      { sellerId: { $in: eligibleSellerIds } }
+    ];
+
+    const totalProducts = await Product.countDocuments(filters);
+    const products = await Product.find(filters)
+      .populate('sellerId', 'shopName')
+      .sort(sort)
+      .skip((page - 1) * limit)
+      .limit(parseInt(limit));
 
     res.status(200).json({
       success: true,
       data: products,
+      totalPage: Math.ceil(totalProducts / limit),
+      totalProducts
     });
   } catch (e) {
-    console.log(error);
+    console.log(e);
     res.status(500).json({
       success: false,
       message: "Some error occured",
@@ -71,7 +99,7 @@ const getProductDetails = async (req, res) => {
       data: product,
     });
   } catch (e) {
-    console.log(error);
+    console.log(e);
     res.status(500).json({
       success: false,
       message: "Some error occured",

@@ -21,7 +21,7 @@ function ShoppingOrderDetailsView({ orderDetails }) {
           </div>
           <div className="flex mt-2 items-center justify-between">
             <p className="font-medium">Order Price</p>
-            <Label>${orderDetails?.totalAmount}</Label>
+            <Label>₹{orderDetails?.totalAmount}</Label>
           </div>
           <div className="flex mt-2 items-center justify-between">
             <p className="font-medium">Payment method</p>
@@ -35,13 +35,14 @@ function ShoppingOrderDetailsView({ orderDetails }) {
             <p className="font-medium">Order Status</p>
             <Label>
               <Badge
-                className={`py-1 px-3 ${
-                  orderDetails?.orderStatus === "confirmed"
-                    ? "bg-green-500"
-                    : orderDetails?.orderStatus === "rejected"
+                className={`py-1 px-3 ${orderDetails?.orderStatus === "confirmed" || orderDetails?.orderStatus === "Delivered"
+                  ? "bg-green-500"
+                  : orderDetails?.orderStatus === "rejected"
                     ? "bg-red-600"
-                    : "bg-black"
-                }`}
+                    : orderDetails?.orderStatus === "Processing"
+                      ? "bg-blue-600"
+                      : "bg-black"
+                  }`}
               >
                 {orderDetails?.orderStatus}
               </Badge>
@@ -55,12 +56,22 @@ function ShoppingOrderDetailsView({ orderDetails }) {
             <ul className="grid gap-3">
               {orderDetails?.cartItems && orderDetails?.cartItems.length > 0
                 ? orderDetails?.cartItems.map((item) => (
-                    <li className="flex items-center justify-between">
-                      <span>Title: {item.title}</span>
-                      <span>Quantity: {item.quantity}</span>
-                      <span>Price: ${item.price}</span>
-                    </li>
-                  ))
+                  <li key={item.productId} className="flex flex-col border-b pb-2">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-3">
+                        <img src={item.image} alt={item.title} className="w-12 h-12 object-cover rounded-md border" />
+                        <div>
+                          <p className="font-medium text-sm text-gray-800">{item.title}</p>
+                          <p className="text-xs text-gray-500 mt-0.5">Sold by: {item.sellerShopName || "Unknown Seller"}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-semibold text-sm">₹{item.price}</p>
+                        <p className="text-xs text-gray-500 mt-0.5">Qty: {item.quantity}</p>
+                      </div>
+                    </div>
+                  </li>
+                ))
                 : null}
             </ul>
           </div>

@@ -4,7 +4,13 @@ const addFeatureImage = async (req, res) => {
   try {
     const { image } = req.body;
 
-    console.log(image, "image");
+    if (!image) {
+      return res.status(400).json({
+        success: false,
+        message: "Image URL is required!",
+      });
+    }
+
 
     const featureImages = new Feature({
       image,

@@ -34,18 +34,18 @@ function AuthLogin() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-md space-y-6">
+    <div className="w-full space-y-8">
       <div className="text-center">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">
-          Sign in to your account
+        <h1 className="text-3xl font-extrabold tracking-tight text-foreground">
+          Welcome Back
         </h1>
-        <p className="mt-2">
-          Don't have an account
+        <p className="mt-2 text-sm text-muted-foreground font-medium">
+          Don't have an account?
           <Link
-            className="font-medium ml-2 text-primary hover:underline"
+            className="font-bold ml-1.5 text-primary hover:text-primary/80 hover:underline transition-all"
             to="/auth/register"
           >
-            Register
+            Register here
           </Link>
         </p>
       </div>

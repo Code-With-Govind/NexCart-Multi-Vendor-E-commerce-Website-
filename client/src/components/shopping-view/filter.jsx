@@ -6,18 +6,18 @@ import { Separator } from "../ui/separator";
 
 function ProductFilter({ filters, handleFilter }) {
   return (
-    <div className="bg-background rounded-lg shadow-sm">
-      <div className="p-4 border-b">
-        <h2 className="text-lg font-extrabold">Filters</h2>
+    <div className="bg-white dark:bg-card rounded-2xl shadow-soft border border-border/50 overflow-hidden sticky top-24 max-h-[calc(100vh-8rem)] flex flex-col">
+      <div className="p-5 border-b border-border/50 bg-muted/10 shrink-0">
+        <h2 className="text-xl font-extrabold text-foreground tracking-tight">Filters</h2>
       </div>
-      <div className="p-4 space-y-4">
+      <div className="p-5 space-y-6 overflow-y-auto custom-scrollbar">
         {Object.keys(filterOptions).map((keyItem) => (
-          <Fragment>
+          <Fragment key={keyItem}>
             <div>
-              <h3 className="text-base font-bold">{keyItem}</h3>
-              <div className="grid gap-2 mt-2">
+              <h3 className="text-sm font-bold text-foreground mb-3 tracking-wider uppercase">{keyItem}</h3>
+              <div className="grid gap-3">
                 {filterOptions[keyItem].map((option) => (
-                  <Label className="flex font-medium items-center gap-2 ">
+                  <Label key={option.id} className="flex font-medium items-center gap-3 cursor-pointer group">
                     <Checkbox
                       checked={
                         filters &&
@@ -26,13 +26,14 @@ function ProductFilter({ filters, handleFilter }) {
                         filters[keyItem].indexOf(option.id) > -1
                       }
                       onCheckedChange={() => handleFilter(keyItem, option.id)}
+                      className="border-muted-foreground/30 data-[state=checked]:bg-primary transition-colors group-hover:border-primary/50"
                     />
-                    {option.label}
+                    <span className="text-muted-foreground group-hover:text-foreground transition-colors group-hover:translate-x-0.5 transform duration-300">{option.label}</span>
                   </Label>
                 ))}
               </div>
             </div>
-            <Separator />
+            <Separator className="bg-border/50" />
           </Fragment>
         ))}
       </div>
