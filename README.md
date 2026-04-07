@@ -2,7 +2,7 @@
 
 An open-source, full-stack E-Commerce platform built with the MERN stack (MongoDB, Express.js, React.js, Node.js). This platform provides a comprehensive solution for online shopping, featuring user authentication, product management, a shopping cart, secure payments, and an administrative dashboard.
 
-## 🌟 Features
+## Features
 
 - **User Authentication:** Secure signup and login using JWT (JSON Web Tokens).
 - **Product Catalog:** Browse products by categories, brands, and view detailed product information.
@@ -13,7 +13,7 @@ An open-source, full-stack E-Commerce platform built with the MERN stack (MongoD
 - **Admin Dashboard:** Administrators can oversee users, manage products, and update order statuses.
 - **Responsive Design:** Optimized for both desktop and mobile viewing with Tailwind CSS.
 
-## 💻 Technologies Used
+## Technologies Used
 
 ### Frontend
 - React.js (v18)
@@ -29,7 +29,7 @@ An open-source, full-stack E-Commerce platform built with the MERN stack (MongoD
 - Mongoose (ODM)
 - JSON Web Token (JWT)
 
-## 🚀 Getting Started
+## Getting Started
 
 Follow these instructions to get a copy of the project up and running on your local machine for development and testing purposes.
 
@@ -76,7 +76,7 @@ Follow these instructions to get a copy of the project up and running on your lo
 
 The client will typically run on `http://localhost:5173` and the server on `http://localhost:5000`.
 
-## 📂 Project Structure
+## Project Structure
 
 ```text
 ├── client/           # React frontend application
