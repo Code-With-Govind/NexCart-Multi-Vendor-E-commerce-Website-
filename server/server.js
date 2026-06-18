@@ -3,6 +3,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
+const path = require("path");
 const authRouter = require("./routes/auth/auth-routes");
 const adminProductsRouter = require("./routes/admin/products-routes");
 const adminOrderRouter = require("./routes/admin/order-routes");
@@ -33,9 +34,21 @@ mongoose
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  process.env.CLIENT_URL
+].filter(Boolean);
+
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== "production") {
+        return callback(null, true);
+      } else {
+        return callback(new Error("Not allowed by CORS"));
+      }
+    },
     methods: ["GET", "POST", "DELETE", "PUT"],
     allowedHeaders: [
       "Content-Type",
@@ -69,5 +82,18 @@ app.use("/api/common/feature", commonFeatureRouter);
 
 // Global Error Handler
 app.use(errorMiddleware);
+
+// Serve React static frontend in production
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "../client/dist")));
+
+  app.get("*", (req, res) => {
+    // Check if the request is for API
+    if (req.originalUrl.startsWith("/api/")) {
+      return res.status(404).json({ success: false, message: "API endpoint not found" });
+    }
+    res.sendFile(path.resolve(__dirname, "../client", "dist", "index.html"));
+  });
+}
 
 app.listen(PORT, () => console.log(`Server is now running on port ${PORT}`));
