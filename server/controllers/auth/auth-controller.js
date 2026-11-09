@@ -7,12 +7,28 @@ const registerUser = async (req, res) => {
   const { userName, email, password } = req.body;
 
   try {
-    const checkUser = await User.findOne({ email });
-    if (checkUser)
+    if (!userName || !email || !password) {
       return res.status(400).json({
         success: false,
-        message: "User Already exists with the same email! Please try again",
+        message: "All fields (Username, Email, Password) are required!",
       });
+    }
+
+    const checkEmail = await User.findOne({ email });
+    if (checkEmail) {
+      return res.status(400).json({
+        success: false,
+        message: "User already exists with this email! Please try another email or login.",
+      });
+    }
+
+    const checkUserName = await User.findOne({ userName });
+    if (checkUserName) {
+      return res.status(400).json({
+        success: false,
+        message: "Username already taken! Please choose a different username.",
+      });
+    }
 
     const hashPassword = await bcrypt.hash(password, 12);
     const newUser = new User({
@@ -24,13 +40,20 @@ const registerUser = async (req, res) => {
     await newUser.save();
     res.status(201).json({
       success: true,
-      message: "Registration successful",
+      message: "Registration successful! You can now login.",
     });
   } catch (e) {
-    console.log(e);
+    console.error("Register Error:", e);
+    if (e.code === 11000) {
+      const field = Object.keys(e.keyPattern || {})[0] || "field";
+      return res.status(400).json({
+        success: false,
+        message: `An account with that ${field} already exists!`,
+      });
+    }
     res.status(500).json({
       success: false,
-      message: "Some error occured",
+      message: e.message || "Some error occurred during registration",
     });
   }
 };
@@ -40,11 +63,18 @@ const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
   try {
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Both email and password are required!",
+      });
+    }
+
     const checkUser = await User.findOne({ email });
     if (!checkUser)
       return res.status(400).json({
         success: false,
-        message: "User doesn't exists! Please register first",
+        message: "User doesn't exist! Please register first",
       });
 
     const checkPasswordMatch = await bcrypt.compare(

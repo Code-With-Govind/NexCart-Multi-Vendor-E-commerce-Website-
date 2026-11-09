@@ -23,12 +23,12 @@ function AuthRegister() {
     dispatch(registerUser(formData)).then((data) => {
       if (data?.payload?.success) {
         toast({
-          title: data?.payload?.message,
+          title: data?.payload?.message || "Registration successful!",
         });
         navigate("/auth/login");
       } else {
         toast({
-          title: data?.payload?.message,
+          title: data?.payload?.message || data?.error?.message || "Registration failed. Please check your backend connection.",
           variant: "destructive",
         });
       }

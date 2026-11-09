@@ -22,11 +22,11 @@ function AuthLogin() {
     dispatch(loginUser(formData)).then((data) => {
       if (data?.payload?.success) {
         toast({
-          title: data?.payload?.message,
+          title: data?.payload?.message || "Logged in successfully!",
         });
       } else {
         toast({
-          title: data?.payload?.message,
+          title: data?.payload?.message || data?.error?.message || "Login failed. Please check credentials or backend connection.",
           variant: "destructive",
         });
       }
