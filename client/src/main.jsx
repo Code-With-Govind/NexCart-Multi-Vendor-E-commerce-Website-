@@ -13,10 +13,19 @@ axios.defaults.withCredentials = true;
 // Intercept axios requests to dynamically route to production backend URL if configured
 axios.interceptors.request.use(
   (config) => {
-    const rawBaseUrl = import.meta.env.VITE_API_URL;
+    let rawBaseUrl = import.meta.env.VITE_API_URL;
     if (rawBaseUrl && config.url && config.url.startsWith("http://localhost:5000")) {
-      const baseUrl = rawBaseUrl.replace(/\/+$/, "");
-      config.url = config.url.replace("http://localhost:5000", baseUrl);
+      rawBaseUrl = rawBaseUrl.trim().replace(/\/+$/, "");
+      if (rawBaseUrl.startsWith("mongodb://") || rawBaseUrl.startsWith("mongodb+srv://")) {
+        console.error(
+          "Config Error: VITE_API_URL cannot be a MongoDB URI. It must be your backend Web API URL (e.g., https://your-backend.onrender.com)"
+        );
+      } else {
+        if (!rawBaseUrl.startsWith("http://") && !rawBaseUrl.startsWith("https://")) {
+          rawBaseUrl = `https://${rawBaseUrl}`;
+        }
+        config.url = config.url.replace("http://localhost:5000", rawBaseUrl);
+      }
     }
 
     try {
