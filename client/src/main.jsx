@@ -7,15 +7,31 @@ import store from "./store/store.js";
 import { Toaster } from "./components/ui/toaster.jsx";
 import axios from "axios";
 
+// Enable credentials for all requests
+axios.defaults.withCredentials = true;
+
 // Intercept axios requests to dynamically route to production backend URL if configured
 axios.interceptors.request.use(
   (config) => {
-    if (config.url && config.url.startsWith("http://localhost:5000")) {
-      const baseUrl = import.meta.env.VITE_API_URL !== undefined 
-        ? import.meta.env.VITE_API_URL 
-        : "";
+    const rawBaseUrl = import.meta.env.VITE_API_URL;
+    if (rawBaseUrl && config.url && config.url.startsWith("http://localhost:5000")) {
+      const baseUrl = rawBaseUrl.replace(/\/+$/, "");
       config.url = config.url.replace("http://localhost:5000", baseUrl);
     }
+
+    try {
+      const storedToken = sessionStorage.getItem("token");
+      if (storedToken) {
+        const parsedToken = JSON.parse(storedToken);
+        if (parsedToken) {
+          config.headers = config.headers || {};
+          config.headers.Authorization = `Bearer ${parsedToken}`;
+        }
+      }
+    } catch (e) {
+      // Ignore JSON parse errors
+    }
+
     return config;
   },
   (error) => Promise.reject(error)

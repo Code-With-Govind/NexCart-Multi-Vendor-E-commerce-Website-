@@ -32,18 +32,26 @@ mongoose
   .catch((error) => console.log(error));
 
 const app = express();
+app.set("trust proxy", 1);
 const PORT = process.env.PORT || 5000;
 
+const clientUrl = process.env.CLIENT_URL ? process.env.CLIENT_URL.replace(/\/+$/, "") : "";
 const allowedOrigins = [
   "http://localhost:5173",
-  process.env.CLIENT_URL
+  clientUrl
 ].filter(Boolean);
 
 app.use(
   cors({
     origin: function (origin, callback) {
       if (!origin) return callback(null, true);
-      if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== "production") {
+      const normalizedOrigin = origin.replace(/\/+$/, "");
+      const isAllowed =
+        allowedOrigins.includes(normalizedOrigin) ||
+        process.env.NODE_ENV !== "production" ||
+        normalizedOrigin.endsWith(".vercel.app");
+
+      if (isAllowed) {
         return callback(null, true);
       } else {
         return callback(new Error("Not allowed by CORS"));
